@@ -15,7 +15,7 @@ class SDL_Cartesian
 		virtual void render();
 		virtual void run();
 
-	private:
+	protected:
 		SDL_Window *window;
 		SDL_Renderer *renderer;
 		SDL_Event mainEvent;

@@ -246,7 +246,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
 							}
 						}
-						if(Math::currentNum == "x") 
+						if(Math::currentNum == "x"||Math::currentNum == "t") 
 						{
 							stk.push_back(x);
 							Math::currentNum = std::string();

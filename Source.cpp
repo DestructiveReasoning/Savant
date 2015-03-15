@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "Txt.h"
 #include "./SDLCartesian.h"
+#include "./SDLPolar.h"
 #include <iostream>
 #include <limits>
 #include <cstdio>
@@ -91,6 +92,15 @@ int main(int argc, char *argv[])
 			std::getline(std::cin, infix);
 			graphFunction(infix);
 		}
+		else if(substring(infix,0,4) == "polar")
+		{
+			printf("~Polar Curve~\n");
+			printf("Write r as a function of t, where t = theta\n");
+			printf("savant> r = ");
+			infix = std::string();
+			std::getline(std::cin, infix);
+			graphPolar(infix);
+		}
 		else
 		{
 			if(Txt::trimEnd(infix) == "") continue;
@@ -110,6 +120,13 @@ void graphFunction(std::string infix)
 	SDL_Cartesian *cartesian = new SDL_Cartesian(WIDTH,HEIGHT,infix);
 	cartesian->run();
 	delete cartesian;
+}
+
+void graphPolar(std::string infix)
+{
+	SDL_Polar *polar = new SDL_Polar(WIDTH,HEIGHT,infix);
+	polar->run();
+	delete polar;
 }
 
 void solveQuadratic()
