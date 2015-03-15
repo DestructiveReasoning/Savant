@@ -4,6 +4,8 @@ SDL_Cartesian::SDL_Cartesian(int _width, int _height, std::string _infix) :
 	width(_width),
 	height(_height),
 	infix(_infix),
+	xOffset(0),
+	yOffset(0),
 	running(true)
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -30,15 +32,44 @@ void SDL_Cartesian::update()
 		yScale = xScale += 0.2;
 		if(xScale > width/2) xScale = yScale = width/2;
 	}
+	if(keys[SDL_SCANCODE_LEFT])
+	{
+		xOffset -= 1;
+	}
+	if(keys[SDL_SCANCODE_RIGHT])
+	{
+		xOffset += 1;
+	}
+	if(keys[SDL_SCANCODE_UP])
+	{
+		yOffset -= 1;
+	}
+	if(keys[SDL_SCANCODE_DOWN])
+	{
+		yOffset += 1;
+	}
+	if(keys[SDL_SCANCODE_HOME])
+	{
+		xOffset = yOffset = 0;
+		xScale = yScale = width/10.0f;
+	}
+	if(keys[SDL_SCANCODE_ESCAPE])
+	{
+		running = false;
+	}
 
 	for(int c = 0; c < width * height; c++) pixels[c] = 0xff000000; //Clear Screen
 	for(int c = 0; c < width; c++)
 	{
-		pixels[c+(height/2)*width] = 0xff444444;	//Draw X axis
+		int coordinate = (int)(c + (-yOffset + height/2) * width);
+		if(coordinate >= 0 && coordinate < width * height && Math::absolute(yOffset) < height/2)
+			pixels[coordinate] = 0xff444444;	//Draw X axis
 	}
 	for(int c = 0; c < height; c++)
 	{
-		pixels[width/2 + c*width] = 0xff444444;		//Draw Y axis
+		int coordinate = (int)(width/2 - xOffset + (c)*width);
+		if(coordinate >= 0 && coordinate < width * height && Math::absolute(xOffset) < width/2)
+			pixels[coordinate] = 0xff444444;		//Draw Y axis
 	}
 	SDL_UpdateTexture(texture,NULL,pixels,width * sizeof(Uint32));
 }
@@ -48,14 +79,14 @@ void SDL_Cartesian::render()
 	
 	double x;
 	double y;
-	last = {0,-Math::evaluateRPN(rpn,(-width/2) / xScale,false)*yScale + (double)height/2};
-	for(int i = 1; i < width; i++)
+	last = {(double)xOffset,-Math::evaluateRPN(rpn,(-width/2) / xScale,false)*yScale + (double)height/2 - (double)yOffset};
+	for(int i = 0 + xOffset; i < width + xOffset; i++)
 	{
 		//y = Math::evaluateRPN(rpn,(i - width)*xScale/width,false);
 		y = -Math::evaluateRPN(rpn,(i-width/2),false);
 		int coordinate = (int)(i + (y + height/2)*width);
-		next = {(double)i,-Math::evaluateRPN(rpn,(i - width/2)/xScale, false) * yScale + (double)height/2};
-		SDL_RenderDrawLine(renderer,last.x,last.y,next.x,next.y);
+		next = {(double)(i - xOffset),-Math::evaluateRPN(rpn,(i - width/2)/xScale, false) * yScale + (double)(height/2 - yOffset)};
+		if(i != xOffset)SDL_RenderDrawLine(renderer,last.x,last.y,next.x,next.y);
 		last = next;
 		//if(coordinate >= 0 && coordinate < width * height) pixels[coordinate] = 0xffffff00;
 	}
@@ -72,6 +103,7 @@ void SDL_Cartesian::run()
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
 		render();
 		SDL_RenderPresent(renderer);
+		SDL_Delay(10);
 	}
 }
 

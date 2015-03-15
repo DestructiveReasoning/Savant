@@ -27,6 +27,8 @@ class SDL_Cartesian
 		int height;
 		double xScale;
 		double yScale;
+		int xOffset;
+		int yOffset;
 		bool running;
 		Coordinate last;
 		Coordinate next;
