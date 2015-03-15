@@ -6,7 +6,7 @@ int Math::identify(std::string infix, int index)
 {
 }
 
-double Math::evaluateRPN(std::string rpn, double x)
+double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 {
 	std::vector<double> stk;
 	Math::currentNum = std::string();
@@ -171,7 +171,7 @@ double Math::evaluateRPN(std::string rpn, double x)
 						num1 = stk.back();
 						if(absolute(num1) > 1)
 						{
-							printf("Invalid range for asin\n");
+							if(verbose) printf("Invalid range for asin\n");
 							return 0.0;
 						}
 						stk.pop_back();
@@ -182,7 +182,7 @@ double Math::evaluateRPN(std::string rpn, double x)
 						num1 = stk.back();
 						if(absolute(num1) > 1)
 						{
-							printf("Invalid range for acos\n");
+							if(verbose) printf("Invalid range for acos\n");
 							return 0.0;
 						}
 						stk.pop_back();
@@ -200,12 +200,18 @@ double Math::evaluateRPN(std::string rpn, double x)
 						stk.pop_back();
 						stk.push_back(Math::absolute(num1));
 					}
+					else if(Math::currentNum == "sqrt")
+					{
+						num1 = stk.back();
+						stk.pop_back();
+						stk.push_back(pow(num1,0.5));
+					}
 					else if(Math::currentNum == "ln")
 					{
 						num1 = stk.back();
 						if(num1 <= 0)
 						{
-							printf("Invalid argument for ln\n");
+							if(verbose) printf("Invalid argument for ln\n");
 							return 0.0;
 						}
 						stk.pop_back();
@@ -216,7 +222,7 @@ double Math::evaluateRPN(std::string rpn, double x)
 						num1 = stk.back();
 						if(num1 <= 0)
 						{
-							printf("Invalid argument for log\n");
+							if(verbose) printf("Invalid argument for log\n");
 							return 0.0;
 						}
 						stk.pop_back();
@@ -239,6 +245,12 @@ double Math::evaluateRPN(std::string rpn, double x)
 							{
 								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
 							}
+						}
+						if(Math::currentNum == "x") 
+						{
+							stk.push_back(x);
+							Math::currentNum = std::string();
+							break;
 						}
 						bool negative = (currentNum[0] == '_');
 						if(negative)
@@ -265,8 +277,11 @@ double Math::evaluateRPN(std::string rpn, double x)
 	stk.pop_back();
 	stk.clear();
 	Math::variables[0]->setValue(num);
-	if(num < 0.001 || num > 1000000) printf("= %6e\n",num);
-	else printf("= %f\n", num);
+	if(verbose)
+	{
+		if(num < 0.001 || num > 1000000) printf("= %6e\n",num);
+		else printf("= %f\n", num);
+	}
 	return num;
 }
 
@@ -456,7 +471,11 @@ void Math::appendCurrentNumber(bool negative)
 			if(negative) 				Math::rpn << "_";
 			if (Math::currentNum == "e")		Math::rpn << std::setprecision(12) << M_E << " ";
 			else if (Math::currentNum == "pi")    	Math::rpn << std::setprecision(12) << M_PI << " ";
-			else if ((c=isVariable(Math::currentNum))!= -1) Math::rpn << std::setprecision(12) << Math::variables[c]->getValue() << " ";
+			else if ((c=isVariable(Math::currentNum))!= -1) 			
+			{
+				if(Math::variables[c]->getValue() >= 0) Math::rpn << std::setprecision(12) << Math::variables[c]->getValue() << " ";
+				else Math::rpn << "_" << std::setprecision(12) << -1 * Math::variables[c]->getValue() << " ";
+			}
 			else                            	Math::rpn << Math::currentNum << " ";
 			negative = false;
 		}

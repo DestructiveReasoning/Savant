@@ -2,15 +2,20 @@
 #include "variable.h"
 #include "Math.h"
 #include "Txt.h"
+#include "./SDLCartesian.h"
 #include <iostream>
 #include <limits>
 #include <cstdio>
 
 #define TITLE "Savant"
+#define WIDTH 800
+#define HEIGHT 600
 
 std::string substring(std::string, int, int);
 
 void solveQuadratic();
+void graphFunction(std::string infix);
+void graphPolar(std::string infix);
 
 int main(int argc, char *argv[])
 {
@@ -52,7 +57,7 @@ int main(int argc, char *argv[])
 				variables = Math::variables;
 			}
 			std::string rvalue = Txt::trimFront(Txt::substring(infix,vn+1,infix.size()-1));
-			double val = Math::evaluateRPN(Math::infixToRPN(rvalue),0);
+			double val = Math::evaluateRPN(Math::infixToRPN(rvalue),0,true);
 			Math::variables[v]->setValue(val);
 			printf("Variable edited: %s\n",Math::variables[v]->getName().c_str());
 		}
@@ -79,11 +84,18 @@ int main(int argc, char *argv[])
 				printf(">>>Variable %s created.\n",newvar.c_str());
 			}
 		}	
+		else if(substring(infix,0,3) == "func")
+		{
+			printf("savant> f(x) = ");
+			infix = std::string();
+			std::getline(std::cin, infix);
+			graphFunction(infix);
+		}
 		else
 		{
+			if(Txt::trimEnd(infix) == "") continue;
 			std::string r = Math::infixToRPN(infix);
-			Math::evaluateRPN(r,0);
-			//printf("= %f\n", Math::evaluateRPN(r,0));
+			Math::evaluateRPN(r,0,true);
 		}
 		infix.clear();
 		Math::rpn.str(std::string());
@@ -91,6 +103,13 @@ int main(int argc, char *argv[])
 	}
 
 	return 0;
+}
+
+void graphFunction(std::string infix)
+{
+	SDL_Cartesian *cartesian = new SDL_Cartesian(WIDTH,HEIGHT,infix);
+	cartesian->run();
+	delete cartesian;
 }
 
 void solveQuadratic()

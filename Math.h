@@ -39,9 +39,11 @@
 class Math
 {
 public:
+	
 	static std::string	infixToRPN(std::string infix);
-	static double	evaluateRPN(std::string rpn, double x);
+	static double		evaluateRPN(std::string rpn, double x, bool verbose);
 	static void 		appendCurrentNumber(bool negative);
+	
 	static std::vector<Variable *> variables;
 	
 	static inline void	setVariables(std::vector<Variable *> var)
@@ -59,7 +61,7 @@ public:
 	};
 	static inline bool	containsFunction(std::string current)
 	{
-		return (current == "abs");
+		return (current == "abs" || current == "sqrt");
 	};
 	static inline bool	isOperator(char c)
 	{
@@ -78,5 +80,10 @@ public:
 	static double absolute(double num);
 };
 
+typedef struct
+{
+	double x;
+	double y;
+}Coordinate;
 
 #endif
