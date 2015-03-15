@@ -100,7 +100,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 					num2 = stk.back();
 					if(num2 == 0.0)
 					{
-						printf("NaN: Dividing by 0\n");
+						if(verbose) printf("NaN: Dividing by 0\n");
 						return 0.0;
 					}
 					stk.pop_back();

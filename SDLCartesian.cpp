@@ -13,12 +13,24 @@ SDL_Cartesian::SDL_Cartesian(int _width, int _height, std::string _infix) :
 	pixels = new Uint32[width * height];
 	rpn = Math::infixToRPN(infix);
 	SDL_SetRenderDrawColor(renderer,0xff,0xff,0,0xff);
+	xScale = width/10.0f;
+	yScale = xScale;
 }
 
 void SDL_Cartesian::update()
 {
-	xScale = width/10;
-	yScale = xScale;
+	keys = SDL_GetKeyboardState(NULL);
+	if(keys[SDL_SCANCODE_MINUS])	
+	{
+		yScale = xScale -= 0.2;
+		if(xScale < 4) xScale = yScale = 4;
+	}
+	if(keys[SDL_SCANCODE_EQUALS])	
+	{
+		yScale = xScale += 0.2;
+		if(xScale > width/2) xScale = yScale = width/2;
+	}
+
 	for(int c = 0; c < width * height; c++) pixels[c] = 0xff000000; //Clear Screen
 	for(int c = 0; c < width; c++)
 	{
@@ -36,13 +48,13 @@ void SDL_Cartesian::render()
 	
 	double x;
 	double y;
-	last = {0,-Math::evaluateRPN(rpn,(-width/2),false) + height/2};
+	last = {0,-Math::evaluateRPN(rpn,(-width/2) / xScale,false)*yScale + (double)height/2};
 	for(int i = 1; i < width; i++)
 	{
 		//y = Math::evaluateRPN(rpn,(i - width)*xScale/width,false);
 		y = -Math::evaluateRPN(rpn,(i-width/2),false);
 		int coordinate = (int)(i + (y + height/2)*width);
-		next = {(double)i,-Math::evaluateRPN(rpn,(i - width/2), false) + height/2};
+		next = {(double)i,-Math::evaluateRPN(rpn,(i - width/2)/xScale, false) * yScale + (double)height/2};
 		SDL_RenderDrawLine(renderer,last.x,last.y,next.x,next.y);
 		last = next;
 		//if(coordinate >= 0 && coordinate < width * height) pixels[coordinate] = 0xffffff00;

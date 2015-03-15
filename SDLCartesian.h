@@ -25,11 +25,12 @@ class SDL_Cartesian
 		std::string rpn;
 		int width;
 		int height;
-		int xScale;
-		int yScale;
+		double xScale;
+		double yScale;
 		bool running;
 		Coordinate last;
 		Coordinate next;
+		const Uint8 *keys;
 };
 
 #endif
