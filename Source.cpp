@@ -4,6 +4,7 @@
 #include "Txt.h"
 #include "./SDLCartesian.h"
 #include "./SDLPolar.h"
+#include "./SDLParametric2.h"
 #include <iostream>
 #include <limits>
 #include <cstdio>
@@ -17,6 +18,8 @@ std::string substring(std::string, int, int);
 void solveQuadratic();
 void graphFunction(std::string infix);
 void graphPolar(std::string infix);
+void graphParametric2D(std::vector<std::string> equations);
+void showHelp();
 
 int main(int argc, char *argv[])
 {
@@ -49,6 +52,11 @@ int main(int argc, char *argv[])
 		else if((vn = Txt::contains(infix,'=')) != -1)
 		{
 			std::string lvalue = Txt::trimEnd(Txt::substring(infix,0,vn-1));
+			if(lvalue=="function"||lvalue=="help"||lvalue=="polar"||lvalue=="parametric"||lvalue=="quadratic")
+			{
+				printf("-->Cannot create variable: %s is a savant function name\n",lvalue.c_str());
+				continue;
+			}
 			int v;
 			if((v = Math::isVariable(lvalue)) == -1)
 			{
@@ -70,6 +78,11 @@ int main(int argc, char *argv[])
 			stream << infix;
 			stream >> newvar >> newvar >> val;
 			bool canCreate = true;
+			if(newvar=="polar"||newvar=="help"||newvar=="quadratic"||newvar=="function"||newvar=="parametric")
+			{
+				printf("-->Cannot create variable: %s is a savant function name\n",newvar.c_str());
+				continue;
+			}
 			for(int c = 0; c < variables.size(); c++)
 			{
 				if(variables[c]->getName() == newvar)
@@ -85,7 +98,7 @@ int main(int argc, char *argv[])
 				printf(">>>Variable %s created.\n",newvar.c_str());
 			}
 		}	
-		else if(substring(infix,0,3) == "func")
+		else if(substring(infix,0,7) == "function")
 		{
 			printf("savant> f(x) = ");
 			infix = std::string();
@@ -100,6 +113,22 @@ int main(int argc, char *argv[])
 			infix = std::string();
 			std::getline(std::cin, infix);
 			graphPolar(infix);
+		}
+		else if(substring(infix,0,10) == "parametric2")
+		{
+			std::vector<std::string> equations;
+			printf("x(t) = ");
+			std::getline(std::cin,infix);
+			equations.push_back(infix);
+			printf("y(t) = ");
+			std::getline(std::cin,infix);
+			equations.push_back(infix);
+			printf("Starting Parametric2 constructor\n");
+			graphParametric2D(equations);
+		}
+		else if(infix == "help")
+		{
+			showHelp();	
 		}
 		else
 		{
@@ -127,6 +156,14 @@ void graphPolar(std::string infix)
 	SDL_Polar *polar = new SDL_Polar(WIDTH,HEIGHT,infix);
 	polar->run();
 	delete polar;
+}
+
+void graphParametric2D(std::vector<std::string> equations)
+{
+	printf("Just about to start...\n");
+	SDL_Parametric2 *parametric = new SDL_Parametric2(WIDTH,HEIGHT,equations);
+	parametric->run();
+	delete parametric;
 }
 
 void solveQuadratic()
@@ -175,4 +212,31 @@ std::string substring(std::string s, int start, int end)
 	for(int c = start; c <= end; c++)
 		sub += s[c];
 	return sub;
+}
+
+void showHelp()
+{
+	printf("\n~Savant Help Menu~\n");
+	printf("Here are the following Savant functions:\n\n");
+	printf("def [variable name] [value]:\tCreates a variable of name [variable name] and sets it to the value [value]\n");
+	printf("function:\t\t\tPrompts for function, and then graphs it in a 2D Cartesian Plane\n");
+	printf("polar:\t\t\t\tPrompts for function, and then graphs it in a 2D Polar Plane. Make sure to write r as a function of x or t\n");
+	printf("parametric2:\t\t\tPrompts for two parametric equations, and graphs the corresponding parametric curve\n");
+	printf("quadratic:\t\t\tPrompts for a,b,c values of a second degree polynomial, and solves for the zeroes\n");
+	printf("clear:\t\t\t\tClears the terminal window\n");
+	printf("exit:\t\t\t\tExits savant\n");
+	printf("--------------------------------------------------------------------------------------------------\n");
+	printf("To use the calculator, simply type in an expression and press ENTER.\n");
+	printf("To refer to the previously calculated value, type \'ans\'. Be warned: \'ans\' will be overwritten after graphing a function\n");
+	printf("To declare a variable for use and set its value equal to an expression, use the following form:\n");
+	printf("\t[variable name] = [expression]\n");
+	printf("\tEx.: energy = 0.5 * 4 * 3^2\n");
+	printf("This is the preferred way to initialize variables, the def function is unnecessary\n");
+	printf("To view the value of a variable, just type in the variable name and press ENTER\n");
+	printf("--------------------------------------------------------------------------------------------------\n");
+	printf("======GRAPH CONTROLS======\n");
+	printf("-:\tZoom Out\n");
+	printf("=:\tZoom In\n");
+	printf("Arrows:\tPan up, down, left, right\n");
+	printf("Esc:\tExit graph\n");
 }

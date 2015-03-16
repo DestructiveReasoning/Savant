@@ -9,5 +9,6 @@
 #include <string>
 #include <sstream>
 #include <SDL2/SDL.h>
+#include <cmath>
 
 #endif
