@@ -143,14 +143,9 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
-				if(num1 >= 0)
-					stk.push_back(std::pow(num1,num2));
-				else if (num2 - (double)(int)num2  != 0.0) 	//EXPONENT IS NOT AN INTEGER
-				{
-					//TODO
-					stk.push_back(std::pow(num1,num2));
-				}
-				else stk.push_back(std::pow(num1,num2));
+				if(num1 >= 0 || std::floor(num2) == num2)
+					stk.push_back(pow(num1,num2));
+				else stk.push_back(-2 * creal(cpow(num1,num2)));
 				break;
 			case ' ':
 				if(containsTrig(Math::currentNum)||containsLog(Math::currentNum)||containsFunction(Math::currentNum))
@@ -211,7 +206,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 					{
 						num1 = stk.back();
 						stk.pop_back();
-						stk.push_back(std::pow(num1,0.5));
+						stk.push_back(pow(num1,0.5));
 					}
 					else if(Math::currentNum == "ln")
 					{
@@ -250,12 +245,18 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 							if(i == 0) val = M_E; //TEMPORARY, CHANGE WHEN RPN MODE IS ACTIVATED	
 							else 
 							{
-								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*std::pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
+								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
 							}
 						}
 						if(Math::currentNum == "x"||Math::currentNum == "t") 
 						{
 							stk.push_back(x);
+							Math::currentNum = std::string();
+							break;
+						}
+						else if(Math::currentNum == "_x"||Math::currentNum == "_t")
+						{
+							stk.push_back(-x);
 							Math::currentNum = std::string();
 							break;
 						}
@@ -286,7 +287,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 	Math::variables[0]->setValue(num);
 	if(verbose)
 	{
-		if(num < 0.001 || num > 1000000) printf("= %6e\n",num);
+		if(Math::absolute(num) < 0.001 || Math::absolute(num) > 1000000) printf("= %6e\n",num);
 		else printf("= %f\n", num);
 	}
 	return num;

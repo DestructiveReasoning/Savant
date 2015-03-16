@@ -10,5 +10,7 @@
 #include <sstream>
 #include <SDL2/SDL.h>
 #include <cmath>
+#include <complex>
+#include <complex.h>
 
 #endif
