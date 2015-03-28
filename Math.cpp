@@ -28,6 +28,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -38,6 +39,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -56,6 +58,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -66,6 +69,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -79,6 +83,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -89,6 +94,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -100,13 +106,14 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 					num2 = stk.back();
 					if(num2 == 0.0)
 					{
-						if(verbose) printf("NaN: Dividing by 0\n");
+						if(verbose) {printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str()); printf("NaN: Dividing by 0\n");}
 						return 0.0;
 					}
 					stk.pop_back();
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -117,6 +124,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -130,6 +138,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
@@ -140,12 +149,14 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 				}
 				else 
 				{
+					printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 					printf("ERROR: Invalid equation form. Stack size is 0.\n");
 					return 0.0;
 				}
 				if(num1 >= 0 || std::floor(num2) == num2)
 					stk.push_back(pow(num1,num2));
-				else stk.push_back(-2 * creal(cpow(num1,num2)));
+//				else stk.push_back(-2 * creal(cpow(num1,num2)));
+				else stk.push_back(Math::exponential(num1,num2,verbose));
 				break;
 			case ' ':
 				if(containsTrig(Math::currentNum)||containsLog(Math::currentNum)||containsFunction(Math::currentNum))
@@ -173,7 +184,11 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 						num1 = stk.back();
 						if(absolute(num1) > 1)
 						{
-							if(verbose) printf("Invalid range for asin\n");
+							if(verbose) 
+							{
+								printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+								printf("Invalid range for asin\n");
+							}
 							return 0.0;
 						}
 						stk.pop_back();
@@ -184,7 +199,11 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 						num1 = stk.back();
 						if(absolute(num1) > 1)
 						{
-							if(verbose) printf("Invalid range for acos\n");
+							if(verbose) 
+							{
+								printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+								printf("Invalid range for acos\n");
+							}
 							return 0.0;
 						}
 						stk.pop_back();
@@ -213,7 +232,11 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 						num1 = stk.back();
 						if(num1 <= 0)
 						{
-							if(verbose) printf("Invalid argument for ln\n");
+							if(verbose) 
+							{
+								printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+								printf("Invalid argument for ln\n");
+							}
 							return 0.0;
 						}
 						stk.pop_back();
@@ -224,14 +247,22 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 						num1 = stk.back();
 						if(num1 <= 0)
 						{
-							if(verbose) printf("Invalid argument for log\n");
+							if(verbose) 
+							{
+								printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+								printf("Invalid argument for log\n");
+							}
 							return 0.0;
 						}
 						stk.pop_back();
 						double num = log(num1) / log(10);
 						stk.push_back(num);
 					}
-					else printf("Function not found\n");
+					else 
+					{
+						printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+						printf("Function not found\n");
+					}
 				}
 				else
 				{
@@ -260,16 +291,20 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 							Math::currentNum = std::string();
 							break;
 						}
-						bool negative = (currentNum[0] == '_');
-						if(negative)
+						bool negative = isNegative(Math::currentNum);
+						while(Math::currentNum[0] == '_')
 						{
 							Math::currentNum.erase(Math::currentNum.begin());
+						}
+						if(negative)
+						{
 							stk.push_back(-1 * atof(Math::currentNum.c_str()));
 						}
 						else stk.push_back(atof(Math::currentNum.c_str()));
 					}
 					catch(int e)
 					{
+						printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
 						printf("Invalid equation.\nException %d has been thrown\n",e);
 						return 0.0;
 					}
@@ -431,7 +466,7 @@ std::string Math::infixToRPN(std::string infix)
 		Math::rpn << Math::stack[c] << " ";
 		Math::stack.pop_back();
     	}
-    	printf("%s\n", Math::rpn.str().c_str());
+    	printf("%s\n", Math::rpn.str().c_str()); //TODO Turn on rpn printing
 	return Math::rpn.str();
 }
 
@@ -457,10 +492,36 @@ int Math::isVariable(std::string s)
 	return -1;
 }
 
+double Math::exponential(double base, double exponent, bool verbose)
+{
+	if(base >= 0.0) return pow(base,exponent);
+	if(std::floor(exponent) == exponent) return pow(base,exponent);
+	double n;
+	for(n = exponent; n > 1.0; n -= 1.0);
+	for(; n < 1.0; n *= 2.0);
+	if(std::floor(n) == n) 
+	{
+		if(verbose)
+		{
+			printf("%s\n",Math::insults[rand()%Math::insults.size()].c_str());
+			printf("Indeterminate exponent\n");
+		}
+		return 0.0;
+	}
+	return -1 * pow(Math::absolute(base),exponent);
+}
+
 double Math::absolute(double num)
 {
 	if(num >= 0) return num;
 	return -1 * num;
+}
+
+bool Math::isNegative(std::string current)
+{
+	int i;
+	for(i = 0; i < current.size() && current[i] == '_'; i++);
+	return (i % 2 != 0);
 }
 
 void Math::appendCurrentNumber(bool negative)
@@ -495,3 +556,4 @@ std::string Math::Math::currentNum = "";
 std::stringstream Math::Math::rpn;
 std::vector<std::string> Math::stack;
 std::vector<Variable *> Math::variables;
+std::vector<std::string> Math::insults;

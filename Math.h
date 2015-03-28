@@ -43,6 +43,8 @@ public:
 	static std::string	infixToRPN(std::string infix);
 	static double		evaluateRPN(std::string rpn, double x, bool verbose);
 	static void 		appendCurrentNumber(bool negative);
+
+	static double exponential(double base, double exponent, bool verbose);
 	
 	static std::vector<Variable *> variables;
 	
@@ -78,6 +80,9 @@ public:
 	static std::vector<std::string> stack;
 	static char lastChar(const std::string, int);
 	static double absolute(double num);
+	static bool isNegative(std::string current);
+
+	static std::vector<std::string> insults;
 };
 
 typedef struct

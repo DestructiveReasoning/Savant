@@ -15,6 +15,7 @@
 
 std::string substring(std::string, int, int);
 
+void initialize();
 void solveQuadratic();
 void graphFunction(std::string infix);
 void graphPolar(std::string infix);
@@ -23,11 +24,12 @@ void showHelp();
 
 int main(int argc, char *argv[])
 {
+	initialize();
 	bool running = true;
 	std::string infix;
 	std::vector<Variable *> variables;
 	
-	printf("\n%s\nv0.1.0\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.1.2\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n\n");
 
 	variables.push_back(new Variable("ans",0.0));
@@ -52,11 +54,17 @@ int main(int argc, char *argv[])
 		else if((vn = Txt::contains(infix,'=')) != -1)
 		{
 			std::string lvalue = Txt::trimEnd(Txt::substring(infix,0,vn-1));
-			if(lvalue=="function"||lvalue=="help"||lvalue=="polar"||lvalue=="parametric"||lvalue=="quadratic")
+			if(lvalue=="function"||lvalue=="help"||lvalue=="polar"||lvalue=="parametric"||lvalue=="quadratic"||Math::containsTrig(lvalue)||Math::containsLog(lvalue)||Math::containsFunction(lvalue)||Math::isOperator(lvalue[0]))
 			{
 				printf("-->Cannot create variable: %s is a savant function name\n",lvalue.c_str());
 				continue;
 			}
+			if((lvalue[0] >= '1' && lvalue[0] <= '9') || lvalue[0] == '0')
+			{
+				printf("-->Cannot create variable: %s. Variables names cannot start with numbers\n",lvalue.c_str());
+				continue;
+			}
+
 			int v;
 			if((v = Math::isVariable(lvalue)) == -1)
 			{
@@ -68,7 +76,7 @@ int main(int argc, char *argv[])
 			std::string rvalue = Txt::trimFront(Txt::substring(infix,vn+1,infix.size()-1));
 			double val = Math::evaluateRPN(Math::infixToRPN(rvalue),0,true);
 			Math::variables[v]->setValue(val);
-			printf("Variable edited: %s\n",Math::variables[v]->getName().c_str());
+			//printf("Variable edited: %s\n",Math::variables[v]->getName().c_str());
 		}
 		else if(substring(infix,0,3) == "def ")
 		{
@@ -78,9 +86,14 @@ int main(int argc, char *argv[])
 			stream << infix;
 			stream >> newvar >> newvar >> val;
 			bool canCreate = true;
-			if(newvar=="polar"||newvar=="help"||newvar=="quadratic"||newvar=="function"||newvar=="parametric")
+			if(newvar=="polar"||newvar=="help"||newvar=="quadratic"||newvar=="function"||newvar=="parametric"||Math::containsTrig(newvar)||Math::containsLog(newvar)||Math::containsFunction(newvar)||Math::isOperator(newvar[0]))
 			{
 				printf("-->Cannot create variable: %s is a savant function name\n",newvar.c_str());
+				continue;
+			}
+			if((newvar[0] >= '1' && newvar[0] <= '9') || newvar[0] == '0')
+			{
+				printf("-->Cannot create variable: %s. Variable names cannot start with a number\n",newvar.c_str());
 				continue;
 			}
 			for(int c = 0; c < variables.size(); c++)
@@ -214,6 +227,27 @@ std::string substring(std::string s, int start, int end)
 	return sub;
 }
 
+void initialize()
+{
+	Math::insults.push_back("Who do you think I am?");
+	Math::insults.push_back("Are you nuts?");
+	Math::insults.push_back("-_- <== That's what I gotta say about your math knowledge.");
+	Math::insults.push_back("Rain Man can't even do that");
+	Math::insults.push_back("How about \'no\'?");
+	Math::insults.push_back("Are you... serious?");
+	Math::insults.push_back("That's just stupid");
+	Math::insults.push_back("Very funny.");
+	Math::insults.push_back("I don't have time for this");
+	Math::insults.push_back("Stop this Mickey Mouse stuff");
+	Math::insults.push_back("Did I just see five yellow cars in a row, or are you just annoying me?");
+	Math::insults.push_back("Hmmmm... You're one of THOSE people");
+	Math::insults.push_back("Don't flatter yourself, idiot");
+	Math::insults.push_back("Don't ever do that again");
+	Math::insults.push_back("Pssssshhhhhhh...");
+	Math::insults.push_back("I hope you have other \'talents\'");
+	srand(time(NULL));
+}
+
 void showHelp()
 {
 	printf("\n~Savant Help Menu~\n");
@@ -239,4 +273,5 @@ void showHelp()
 	printf("=:\tZoom In\n");
 	printf("Arrows:\tPan up, down, left, right\n");
 	printf("Esc:\tExit graph\n");
+	printf("\n");
 }
