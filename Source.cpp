@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	std::string infix;
 	std::vector<Variable *> variables;
 	
-	printf("\n%s\nv0.1.3\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.1.4\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n\n");
 
 	variables.push_back(new Variable("ans",0.0));
