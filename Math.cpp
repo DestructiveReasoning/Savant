@@ -466,7 +466,7 @@ std::string Math::infixToRPN(std::string infix)
 		Math::rpn << Math::stack[c] << " ";
 		Math::stack.pop_back();
     	}
-    	printf("%s\n", Math::rpn.str().c_str()); //TODO Turn on rpn printing
+//    	printf("%s\n", Math::rpn.str().c_str()); //TODO Turn on rpn printing
 	return Math::rpn.str();
 }
 
