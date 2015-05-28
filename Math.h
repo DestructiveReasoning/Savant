@@ -36,6 +36,8 @@
 #define LN "l"
 #define LOG "L"
 
+#define EXP_EVEN_NUMERATOR 1048576.0f
+
 class Math
 {
 public:

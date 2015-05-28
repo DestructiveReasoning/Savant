@@ -428,22 +428,22 @@ std::string Math::infixToRPN(std::string infix)
 				Math::stack.push_back("+");
 				break;
 			case '-':
-				if(c == 0)
+				if(c == 0)						//If the negative is the first character of the equation
 				{
-					negative = true;
+					negative = !negative;
 					break;
 				}
-				else if(rpn.str()[c-1] == 'e' || rpn.str()[c-1] == 'E')
+				else if(rpn.str()[c-1] == 'e' || rpn.str()[c-1] == 'E')	//If it's an exponent, add it to currentNum to be parsed later
 				{
 					Math::currentNum += '-';
 					break;
 				}
-				Math::appendCurrentNumber(negative);
 				if(isOperator(Math::lastChar(infix,c)) || lastChar(infix,c) == '(')
 				{
-					negative = true;
+					negative = !negative;
 					break;
 				}
+				Math::appendCurrentNumber(negative);	//TODO Fix location of this.
 				for (int j = Math::stack.size() - 1; j >= 0; j--)
 				{
 					if (Math::stack[j] == "(") break;
@@ -466,7 +466,7 @@ std::string Math::infixToRPN(std::string infix)
 		Math::rpn << Math::stack[c] << " ";
 		Math::stack.pop_back();
     	}
-//    	printf("%s\n", Math::rpn.str().c_str()); //TODO Turn on rpn printing
+    	printf("%s\n", Math::rpn.str().c_str()); //TODO Turn on rpn printing
 	return Math::rpn.str();
 }
 
@@ -494,12 +494,15 @@ int Math::isVariable(std::string s)
 
 double Math::exponential(double base, double exponent, bool verbose)
 {
+	double multiplier = -1.0f;
 	if(base >= 0.0) return pow(base,exponent);
 	if(std::floor(exponent) == exponent) return pow(base,exponent);
-	double n;
-	for(n = exponent; n > 1.0; n -= 1.0);
-	for(; n < 1.0; n *= 2.0);
-	if(std::floor(n) == n) 
+	double n,d;
+	for(d = exponent; d > 1.0; d -= 1.0);
+	for(; d < 1.0; d *= 2.0);
+	for(n = 1/exponent; n > 2.0; n -= 2.0);
+//	for(; n < 1.0; n *= 2.0);
+	if(std::floor(d) == d) 
 	{
 		if(verbose)
 		{
@@ -508,7 +511,16 @@ double Math::exponential(double base, double exponent, bool verbose)
 		}
 		return 0.0;
 	}
-	return -1 * pow(Math::absolute(base),exponent);
+	if(std::floor(n) == n)
+	{
+		if((int)n % 2 == 0) multiplier = 1.0f;	
+	}
+	else
+	{
+		if(std::floor(n * EXP_EVEN_NUMERATOR) == n * EXP_EVEN_NUMERATOR) multiplier = 1.0f;
+	}
+
+	return multiplier * pow(Math::absolute(base),exponent);
 }
 
 double Math::absolute(double num)
