@@ -276,7 +276,10 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 							if(i == 0) val = M_E; //TEMPORARY, CHANGE WHEN RPN MODE IS ACTIVATED	
 							else 
 							{
-								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
+//								val=atof(Txt::trimEnd(Txt::substring(Math::currentNum,0,i)).c_str())*pow(10,atof(Txt::trimFront(Txt::substring(Math::currentNum,i+1,Math::currentNum.size())).c_str()));
+//								printf("CURRENT NUM: %s\n",Math::currentNum.c_str());
+								std::stringstream s(Math::currentNum);
+								s >> val >> val;
 							}
 						}
 						if(Math::currentNum == "x"||Math::currentNum == "t") 
@@ -433,11 +436,13 @@ std::string Math::infixToRPN(std::string infix)
 					negative = !negative;
 					break;
 				}
-				else if(rpn.str()[c-1] == 'e' || rpn.str()[c-1] == 'E')	//If it's an exponent, add it to currentNum to be parsed later
+				else if(infix[c-1] == 'e' || infix[c-1] == 'E')	//If it's an exponent, add it to currentNum to be parsed later
 				{
-					Math::currentNum += '-';
+					Math::currentNum.push_back('-');
+//					printf("ADDING THE MINUS SIGN");
 					break;
 				}
+//				else printf("LAST CHAR: %c\n",rpn.str()[c-1]);
 				if(isOperator(Math::lastChar(infix,c)) || lastChar(infix,c) == '(')
 				{
 					negative = !negative;
@@ -558,6 +563,7 @@ void Math::appendCurrentNumber(bool negative)
 				else Math::rpn << "_" << std::setprecision(12) << -1 * Math::variables[c]->getValue() << " ";
 			}
 			else                            	Math::rpn << Math::currentNum << " ";
+//			printf("CURRENT NUM FROM APPEND: %s\n",Math::currentNum.c_str());
 			negative = false;
 		}
 		currentNum.clear();
@@ -569,3 +575,5 @@ std::stringstream Math::Math::rpn;
 std::vector<std::string> Math::stack;
 std::vector<Variable *> Math::variables;
 std::vector<std::string> Math::insults;
+std::string Math::colorNames[4];
+int Math::colorValues[4];

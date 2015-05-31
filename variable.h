@@ -6,15 +6,17 @@
 class Variable
 {
 	public:
-		Variable(std::string n, double v) : name(n), value(v) {};
+		Variable(std::string n, double v, bool isConstant) : name(n), value(v), constant(isConstant) {};
 		std::string getName();
 		double getValue(); 
+		inline bool isConstant() { return constant; };
 
 		void setValue(double val);
 
 	private:
 		std::string name;
 		double value;
+		bool constant;
 };
 
 #endif

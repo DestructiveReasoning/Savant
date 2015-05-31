@@ -85,6 +85,9 @@ public:
 	static bool isNegative(std::string current);
 
 	static std::vector<std::string> insults;
+
+	static std::string colorNames[];
+	static int colorValues[];
 };
 
 typedef struct

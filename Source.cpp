@@ -5,7 +5,6 @@
 #include "./SDLCartesian.h"
 #include "./SDLPolar.h"
 #include "./SDLParametric2.h"
-#include <iostream>
 #include <limits>
 #include <cstdio>
 
@@ -56,13 +55,16 @@ std::string substring(std::string, int, int);
 void initialize();
 void solveQuadratic();
 void graphFunction(std::string infix);
+void graphFunctions(std::vector<std::string> functions);
 void graphPolar(std::string infix);
+void graphPolars(std::vector<std::string> functions);
 void graphParametric2D(std::vector<std::string> equations);
 void showHelp();
+std::vector<Variable *> variables;
+std::vector<std::string> intros;
 
 int main(int argc, char *argv[])
 {
-	initialize();
 	if(argc > 1)
 	{
 		printf("Following order... %s\n", argv[1]);
@@ -78,16 +80,18 @@ int main(int argc, char *argv[])
 			return 0;
 		}
 	}
+
+	printf("\n%s\nv0.2.0\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("This free software includes exactly 0 warranties\n\n");
+	initialize();
+
 	bool running = true;
 	std::string infix;
-	std::vector<Variable *> variables;
 	
-	printf("\n%s\nv0.1.5\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
-	printf("This free software includes exactly 0 warranties\n\n");
 
-	variables.push_back(new Variable("ans",0.0));
-	variables.push_back(new Variable("pi",M_PI));
-	variables.push_back(new Variable("e",M_E));
+	variables.push_back(new Variable("ans",0.0,false));
+	variables.push_back(new Variable("pi",M_PI,true));
+	variables.push_back(new Variable("e",M_E,true));
 
 	int vn;
 
@@ -123,21 +127,27 @@ int main(int argc, char *argv[])
 			{
 				printf(">>>Variable %s created\n",lvalue.c_str());
 				v = Math::variables.size();
-				Math::variables.push_back(new Variable(lvalue,0.0));
+				Math::variables.push_back(new Variable(lvalue,0.0,false));
 				variables = Math::variables;
 			}
 			std::string rvalue = Txt::trimFront(Txt::substring(infix,vn+1,infix.size()-1));
 			double val = Math::evaluateRPN(Math::infixToRPN(rvalue),0,true);
-			Math::variables[v]->setValue(val);
+			if(!Math::variables[v]->isConstant()) Math::variables[v]->setValue(val);
+			else
+			{
+				printf("-->Cannot update variable: %s is a constant!\n",Math::variables[v]->getName().c_str());
+			}
 			//printf("Variable edited: %s\n",Math::variables[v]->getName().c_str());
 		}
 		else if(substring(infix,0,3) == "def ")
 		{
 			std::stringstream stream;
 			std::string newvar;
+			std::string valinfix;
 			double val = 0.0f;
 			stream << infix;
-			stream >> newvar >> newvar >> val;
+			stream >> newvar >> newvar >> valinfix;
+			val = Math::evaluateRPN(Math::infixToRPN(valinfix),0,false);
 			bool canCreate = true;
 			if(newvar=="polar"||newvar=="help"||newvar=="quadratic"||newvar=="function"||newvar=="parametric"||Math::containsTrig(newvar)||Math::containsLog(newvar)||Math::containsFunction(newvar)||Math::isOperator(newvar[0]))
 			{
@@ -149,32 +159,133 @@ int main(int argc, char *argv[])
 				printf("-->Cannot create variable: %s. Variable names cannot start with a number\n",newvar.c_str());
 				continue;
 			}
-			for(int c = 0; c < variables.size(); c++)
+			for(int c = 0; c < Math::variables.size(); c++)
 			{
-				if(variables[c]->getName() == newvar)
+				if(Math::variables[c]->getName() == newvar)
 				{
-					printf("-->Cannot define variable %s, it has already been defined\n",variables[c]->getName().c_str());
+					printf("-->Cannot define variable %s, it has already been defined\n",Math::variables[c]->getName().c_str());
 					canCreate = false;
 					break;
 				}
 			}
-			if(canCreate)
+			if(canCreate)							//Creating a constant
 			{
-				variables.push_back(new Variable (newvar, val));
+				Math::variables.push_back(new Variable (newvar, val, true));
+				variables = Math::variables;
+				std::ofstream file (NULL);
+				std::stringstream path;
+				path << getenv("HOME");
+				path << "/.savant";
+				file.open(path.str().c_str(),std::ofstream::app);
+				file << newvar << " " << val << "\n";
+				file.close();
 				printf(">>>Variable %s created.\n",newvar.c_str());
 			}
 		}	
-		else if(substring(infix,0,7) == "function")
+		else if(substring(infix,0,5) == "delete")
 		{
-			printf("savant> f(x) = ");
+			std::stringstream s(infix);
+			std::string varname;
+			std::string temp;
+			s >> temp >> varname;
+			int i = -1;
+			for(int c = 0; c < Math::variables.size(); c++)
+			{
+				if(Math::variables[c]->getName() == varname) i = c;
+			}
+
+			if(i == -1)
+			{
+				printf("Cannot delete %s: it is not a variable!\n",varname);
+				continue;
+			}
+
+			printf(">>>Variable %s deleted.\n",Math::variables[i]->getName().c_str());
+//			Math::variables.erase(Math::variables.begin() + i);
+			Math::variables[i] = Math::variables.back();
+			Math::variables.pop_back();
+			variables = Math::variables;
+			std::ofstream file (NULL);
+			std::stringstream path;
+			path << getenv("HOME");
+			path << "/.savant";
+			file.open(path.str().c_str(),std::ofstream::out|std::ofstream::trunc);
+			for(int c = 0; c < Math::variables.size(); c++)
+			{
+				if(Math::variables[c]->isConstant() && Math::variables[c]->getName() != "pi" && Math::variables[c]->getName() != "e")
+				{
+					file << Math::variables[c]->getName() << " " << Math::variables[c]->getValue() << "\n";
+				}
+			}
+			file.close();
+		}
+		else if(substring(infix,0,7) == "function")				//Graph Functions
+		{
+			int num;
+			std::vector<std::string> functions;
+			std::string rest = substring(infix,8,infix.size() - 1);
 			infix = std::string();
+			if(rest.size() >= 0)
+			{
+				num = atoi(rest.c_str());
+				if(num == 0) num = 1;
+				if(num <= 4 && num > -1)
+				{
+					printf("Amount of functions: %d\n",num);
+				}
+				else 
+				{
+					printf("A maximum of 4 graphs can be drawn at once.\n");
+					continue;
+				}
+				char functionName = 'f';
+				for(int i = 0; i < num; i++)
+				{
+					printf("savant> %c(x) = ",functionName);
+					std::getline(std::cin, infix);
+					functions.push_back(infix);
+					printf("--------] %c(x) will be drawn in %s\n",functionName,Math::colorNames[i].c_str());
+					functionName += 1;
+					infix = std::string();
+				}
+				graphFunctions(functions);
+				continue;
+			}
+			printf("savant> f(x) = ");
 			std::getline(std::cin, infix);
 			graphFunction(infix);
 		}
 		else if(substring(infix,0,4) == "polar")
 		{
+			int num;
+			std::vector<std::string> functions;
+			std::string rest = substring(infix,5,infix.size() - 1);
+			infix = std::string();
 			printf("~Polar Curve~\n");
-			printf("Write r as a function of t, where t = theta\n");
+			printf("Write functions in terms of t, where t = theta\n");
+			if(rest.size() >= 0)
+			{
+				num = atoi(rest.c_str());
+				if(num == 0) num = 1;
+				if(num <=4 && num >-1) printf("Amount of functions: %d\n",num);
+				else 
+				{
+					printf("A maximum of 4 graphs can be drawn at once.\n");
+					continue;
+				}
+				char functionName = 'r';
+				for(int i = 0; i < num; i++)
+				{
+					printf("savant> %c(t) = ",functionName);
+					std::getline(std::cin,infix);
+					functions.push_back(infix);
+					printf("--------] %c(t) will be drawn in %s\n",functionName,Math::colorNames[i].c_str());
+					functionName -= 1;
+					infix = std::string();
+				}
+				graphPolars(functions);
+				continue;
+			}
 			printf("savant> r = ");
 			infix = std::string();
 			std::getline(std::cin, infix);
@@ -212,7 +323,16 @@ int main(int argc, char *argv[])
 
 void graphFunction(std::string infix)
 {
-	SDL_Cartesian *cartesian = new SDL_Cartesian(WIDTH,HEIGHT,infix);
+	std::vector<std::string> functions;
+	functions.push_back(infix);
+	SDL_Cartesian *cartesian = new SDL_Cartesian(WIDTH,HEIGHT,functions);
+	cartesian->run();
+	delete cartesian;
+}
+
+void graphFunctions(std::vector<std::string> functions)
+{
+	SDL_Cartesian *cartesian = new SDL_Cartesian(WIDTH,HEIGHT,functions);
 	cartesian->run();
 	delete cartesian;
 }
@@ -220,6 +340,13 @@ void graphFunction(std::string infix)
 void graphPolar(std::string infix)
 {
 	SDL_Polar *polar = new SDL_Polar(WIDTH,HEIGHT,infix);
+	polar->run();
+	delete polar;
+}
+
+void graphPolars(std::vector<std::string> functions)
+{
+	SDL_Polar *polar = new SDL_Polar(WIDTH,HEIGHT,functions);
 	polar->run();
 	delete polar;
 }
@@ -282,6 +409,53 @@ std::string substring(std::string s, int start, int end)
 
 void initialize()
 {
+	srand(time(NULL));
+	std::stringstream path;
+	path << getenv("HOME") << "/.savant";
+	printf("Opening a file...\n");
+	std::ifstream file (path.str().c_str());
+	std::string line;
+	if(file.is_open())
+	{
+		printf("Recalling all constants...\n");
+		while(getline(file,line))
+		{
+//			char name[64];
+			std::string name;
+			double value;
+//			sscanf(line.c_str(),"%s %f",name,&value);
+			std::stringstream s(line);
+			s >> name >> value;
+			variables.push_back(new Variable(name,value,true));
+		}
+	}
+	else 
+	{
+		printf("Cannot open file: %s\n",path.str().c_str());
+		std::ofstream f(NULL);
+		f.open(path.str().c_str());
+		f << "____ 666" << "\n";
+		f.close();
+	}
+	file.close();
+
+	intros.push_back("Contacting the President...\n");
+	intros.push_back("Practicing Voodoo tactics...\n");
+	intros.push_back("Comprehending The Matrix...\n");
+	intros.push_back("Reading \'Finnegans Wake\'...\n");
+	intros.push_back("Preparing for combat...\n");
+	intros.push_back("Applying the Categorical Imperative...\n");
+	intros.push_back("Counting red and yellow cars...\n");
+	intros.push_back("Reciting \'Who\'s on first?\'...\n");
+	intros.push_back("Insulting K-Mart...\n");
+	intros.push_back("Takin' care of business...\n");
+	intros.push_back("Saving Private Ryan...\n");
+	intros.push_back("Reading your mind...\n");
+	intros.push_back("Learning calculus...\n");
+	intros.push_back("Studying the Talmud...\n");
+
+	printf("%s\n",intros[rand()%intros.size()].c_str());
+
 	Math::insults.push_back("Who do you think I am?");
 	Math::insults.push_back("Are you nuts?");
 	Math::insults.push_back("-_- <== That's what I gotta say about your math knowledge.");
@@ -298,16 +472,28 @@ void initialize()
 	Math::insults.push_back("Don't ever do that again");
 	Math::insults.push_back("Pssssshhhhhhh...");
 	Math::insults.push_back("I hope you have other \'talents\'");
-	srand(time(NULL));
+	Math::insults.push_back("You're a raaaabid anti-dentite!");
+
+	Math::colorNames[0] 	= "Yellow";
+	Math::colorNames[1]	= "Red";
+	Math::colorNames[2]	= "Blue";
+	Math::colorNames[3]	= "Orange";
+	Math::colorValues[0]	= 0xFFFF00;
+	Math::colorValues[1]	= 0xFF4444;
+	Math::colorValues[2]	= 0x4444FF;
+	Math::colorValues[3]	= 0xFF6600;
 }
 
 void showHelp()
 {
 	printf("\n~Savant Help Menu~\n");
 	printf("Here are the following Savant functions:\n\n");
-	printf("def [variable name] [value]:\tCreates a variable of name [variable name] and sets it to the value [value]\n");
+	printf("def [variable name] [value]:\tCreates a constant variable of name [variable name] and sets it to the value [value] that is saved and can still be used after savant is closed.\n");
+	printf("delete [variable name]:\t\tDeletes a constant variable that was created by \'def\'.\n");
 	printf("function:\t\t\tPrompts for function, and then graphs it in a 2D Cartesian Plane\n");
-	printf("polar:\t\t\t\tPrompts for function, and then graphs it in a 2D Polar Plane. Make sure to write r as a function of x or t\n");
+	printf("function [1-4]:\t\t\tPrompts for up to 4 functions, and then graphs them simultaneously in a 2D Cartesian Plane\n");
+	printf("polar:\t\t\t\tPrompts for function, and then graphs it in a 2D Polar Plane. \n");
+	printf("polar [1-4]:\t\t\tPrompts for up to 4 functions and graphs them simultaneously in a 2D Polar Plane.\n");
 	printf("parametric2:\t\t\tPrompts for two parametric equations, and graphs the corresponding parametric curve\n");
 	printf("quadratic:\t\t\tPrompts for a,b,c values of a second degree polynomial, and solves for the zeroes\n");
 	printf("clear:\t\t\t\tClears the terminal window\n");
@@ -318,7 +504,6 @@ void showHelp()
 	printf("To declare a variable for use and set its value equal to an expression, use the following form:\n");
 	printf("\t[variable name] = [expression]\n");
 	printf("\tEx.: energy = 0.5 * 4 * 3^2\n");
-	printf("This is the preferred way to initialize variables, the def function is unnecessary\n");
 	printf("To view the value of a variable, just type in the variable name and press ENTER\n");
 	printf("--------------------------------------------------------------------------------------------------\n");
 	printf("======GRAPH CONTROLS======\n");

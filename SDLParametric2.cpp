@@ -1,7 +1,7 @@
 #include "./SDLParametric2.h"
 
 SDL_Parametric2::SDL_Parametric2(int _width, int _height, std::vector<std::string> _equations) :
-	SDL_Cartesian(_width,_height,_equations[0])
+	SDL_Cartesian(_width,_height,_equations)
 {
 	printf("Starting Equation Transfer...\n");
 	equations.push_back(_equations[0]);

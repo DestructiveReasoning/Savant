@@ -9,6 +9,7 @@ class SDL_Polar : public SDL_Cartesian
 {
 	public:
 		SDL_Polar(int width, int height, std::string infix) : SDL_Cartesian(width,height,infix) {};
+		SDL_Polar(int width, int height, std::vector<std::string> functions) : SDL_Cartesian(width,height,functions) {};
 
 		virtual void render();
 };
