@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("\n%s\nv0.2.0\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.2.1\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n\n");
 	initialize();
 
