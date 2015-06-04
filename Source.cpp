@@ -81,8 +81,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("\n%s\nv0.2.1\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
-	printf("This free software includes exactly 0 warranties\n\n");
+	printf("\n%s\nv0.2.2\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("This free software includes exactly 0 warranties\n");
+	printf("For instructions, type \'help\'.\n\n");
 	initialize();
 
 	bool running = true;
