@@ -81,7 +81,25 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("\n%s\nv0.2.3\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	std::stringstream logoPath;
+	logoPath << getenv("HOME");
+	logoPath << "/.savant/logo";
+	std::ifstream logoFile (logoPath.str());
+	std::string line;
+	if(logoFile.is_open())
+	{
+		while(getline(logoFile,line))
+		{
+			printf("%s\n",line.c_str());
+		}
+	}
+	else 
+	{
+		printf("Could not load logo file\n");
+	}
+	logoFile.close();
+
+	printf("\n%s\nv0.3.0\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n");
 	printf("For instructions, type \'help\'.\n\n");
 	initialize();
@@ -177,7 +195,7 @@ int main(int argc, char *argv[])
 				std::ofstream file (NULL);
 				std::stringstream path;
 				path << getenv("HOME");
-				path << "/.savant";
+				path << "/.savant/constants";
 				file.open(path.str().c_str(),std::ofstream::app);
 				file << newvar << " " << val << "\n";
 				file.close();
@@ -210,7 +228,7 @@ int main(int argc, char *argv[])
 			std::ofstream file (NULL);
 			std::stringstream path;
 			path << getenv("HOME");
-			path << "/.savant";
+			path << "/.savant/constants";
 			file.open(path.str().c_str(),std::ofstream::out|std::ofstream::trunc);
 			for(int c = 0; c < Math::variables.size(); c++)
 			{
@@ -413,7 +431,7 @@ void initialize()
 {
 	srand(time(NULL));
 	std::stringstream path;
-	path << getenv("HOME") << "/.savant";
+	path << getenv("HOME") << "/.savant/constants";
 	printf("Opening a file...\n");
 	std::ifstream file (path.str().c_str());
 	std::string line;
