@@ -322,7 +322,7 @@ double Math::evaluateRPN(std::string rpn, double x, bool verbose)
 	double num = stk.back();
 	stk.pop_back();
 	stk.clear();
-	Math::variables[0]->setValue(num);
+
 	if(verbose)
 	{
 		if(Math::absolute(num) < 0.001 || Math::absolute(num) > 1000000) printf("= %6e\n",num);
@@ -570,6 +570,19 @@ void Math::appendCurrentNumber(bool negative)
 	}
 }
 
+void Math::setVariables(std::vector<Variable *> var)
+{
+	Math::variables = var;
+	for(int c = 0; c < Math::variables.size(); c++)
+	{
+		if(Math::variables[c]->getName() == "ans")
+		{
+			Math::ANS = c;
+			break;
+		}
+	}
+}
+
 std::string Math::Math::currentNum = "";
 std::stringstream Math::Math::rpn;
 std::vector<std::string> Math::stack;
@@ -577,3 +590,4 @@ std::vector<Variable *> Math::variables;
 std::vector<std::string> Math::insults;
 std::string Math::colorNames[4];
 int Math::colorValues[4];
+int Math::ANS;

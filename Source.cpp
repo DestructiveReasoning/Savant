@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("\n%s\nv0.2.2\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.2.3\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n");
 	printf("For instructions, type \'help\'.\n\n");
 	initialize();
@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
 	bool running = true;
 	std::string infix;
 	
-
 	variables.push_back(new Variable("ans",0.0,false));
 	variables.push_back(new Variable("pi",M_PI,true));
 	variables.push_back(new Variable("e",M_E,true));
@@ -133,6 +132,7 @@ int main(int argc, char *argv[])
 			}
 			std::string rvalue = Txt::trimFront(Txt::substring(infix,vn+1,infix.size()-1));
 			double val = Math::evaluateRPN(Math::infixToRPN(rvalue),0,true);
+			Math::variables[Math::ANS]->setValue(val);
 			if(!Math::variables[v]->isConstant()) Math::variables[v]->setValue(val);
 			else
 			{
@@ -149,6 +149,7 @@ int main(int argc, char *argv[])
 			stream << infix;
 			stream >> newvar >> newvar >> valinfix;
 			val = Math::evaluateRPN(Math::infixToRPN(valinfix),0,false);
+			Math::variables[Math::ANS]->setValue(val);
 			bool canCreate = true;
 			if(newvar=="polar"||newvar=="help"||newvar=="quadratic"||newvar=="function"||newvar=="parametric"||Math::containsTrig(newvar)||Math::containsLog(newvar)||Math::containsFunction(newvar)||Math::isOperator(newvar[0]))
 			{
@@ -312,7 +313,7 @@ int main(int argc, char *argv[])
 		{
 			if(Txt::trimEnd(infix) == "") continue;
 			std::string r = Math::infixToRPN(infix);
-			Math::evaluateRPN(r,0,true);
+			Math::variables[Math::ANS]->setValue(Math::evaluateRPN(r,0,true));
 		}
 		infix.clear();
 		Math::rpn.str(std::string());
@@ -439,6 +440,8 @@ void initialize()
 		f.close();
 	}
 	file.close();
+
+	Math::ANS = 0;
 
 	intros.push_back("Contacting the President...\n");
 	intros.push_back("Practicing Voodoo tactics...\n");

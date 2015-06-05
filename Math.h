@@ -50,10 +50,8 @@ public:
 	
 	static std::vector<Variable *> variables;
 	
-	static inline void	setVariables(std::vector<Variable *> var)
-	{
-		Math::variables = var;
-	};
+	static void	setVariables(std::vector<Variable *> var);
+
 	static inline bool 	containsTrig(std::string current)
 	{
 		return (	current == "sin" || current == "cos" || current == "tan" ||
@@ -88,6 +86,7 @@ public:
 
 	static std::string colorNames[];
 	static int colorValues[];
+	static int ANS;
 };
 
 typedef struct
