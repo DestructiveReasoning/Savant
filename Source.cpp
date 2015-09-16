@@ -126,6 +126,34 @@ int main(int argc, char *argv[])
 			printf("~$ Starting Quadratic Mode $~\n");
 			solveQuadratic();
 		}
+		else if(substring(infix,0,4) == "htod ")
+		{
+			std::string hex = substring(infix,5,infix.size() - 1);
+			int dec = Math::htod(hex);
+			Math::variables[Math::ANS]->setValue((double)dec);
+			printf("%d\n",dec);
+		}
+		else if(substring(infix,0,4) == "btod ")
+		{
+			std::string bin = substring(infix,5,infix.size() - 1);
+			int dec = Math::btod(bin);
+			Math::variables[Math::ANS]->setValue((double)dec);
+			printf("%d\n",dec);
+		}
+		else if(substring(infix,0,4) == "dtoh ")
+		{
+			std::string x = substring(infix,5,infix.size() - 1);
+			int dec = atoi(x.c_str());
+			std::string hex = Math::dtoh(dec);
+			printf("%s\n", hex.c_str());
+		}
+		else if(substring(infix,0,4) == "dtob ")
+		{
+			std::string x = substring(infix,5,infix.size() - 1);
+			int dec = atoi(x.c_str());
+			std::string bin = Math::dtob(dec);
+			printf("%s\n", bin.c_str());
+		}
 		else if((vn = Txt::contains(infix,'=')) != -1)
 		{
 			std::string lvalue = Txt::trimEnd(Txt::substring(infix,0,vn-1));

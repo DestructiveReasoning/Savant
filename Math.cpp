@@ -475,6 +475,124 @@ std::string Math::infixToRPN(std::string infix)
 	return Math::rpn.str();
 }
 
+int Math::htod(std::string hex)
+{
+	int total = 0;
+	for(int i = 0; i < hex.size(); i++)
+	{
+		int q = hex.size() - 1 - i;
+		std::stringstream s;
+		if(hex[i] == 'a') s << 10;
+		else if(hex[i] == 'b') s << 11;
+		else if(hex[i] == 'c') s << 12;
+		else if(hex[i] == 'd') s << 13;
+		else if(hex[i] == 'e') s << 14;
+		else if(hex[i] == 'f') s << 15;
+		else s << hex[i];
+		total += atoi(s.str().c_str()) * pow(16,q);
+	}
+	return total;
+}
+
+int Math::btod(std::string bin)
+{
+	int total = 0;
+	for(int i = 0; i < bin.size(); i++)
+	{
+		int q = bin.size() - 1 - i;
+		std::stringstream s;
+		s << bin[i];
+		total += atoi(s.str().c_str()) * pow(2,q);
+	}
+	return total;
+}
+
+std::string Math::dtoh(int dec)
+{
+	std::string hex = "";
+	int exp = 0;
+	for(;pow(16,exp) <= dec; exp++);
+	exp--;
+	while (exp >= 0)
+	{
+		if(dec == 0) 
+		{
+			hex.push_back('0');
+			exp--;
+			continue;
+		}
+		int n = dec / pow(16,exp);
+		if(n < 10)
+		{
+			std::stringstream s;
+			s << n;
+			hex.push_back(s.str()[0]);
+		}
+		else 
+		{
+			switch(n)
+			{
+				case 10:
+					hex.push_back('a');
+					break;
+				case 11:
+					hex.push_back('b');
+					break;
+				case 12:
+					hex.push_back('c');
+					break;
+				case 13:
+					hex.push_back('d');
+					break;
+				case 14:
+					hex.push_back('e');
+					break;
+				case 15:
+					hex.push_back('f');
+					break;
+				default:
+					std::stringstream s;
+					s << "Brainfart.\n";
+					s << n << " is too great.\n";
+					return s.str();
+					break;
+			}
+		}
+		if(n > 0) dec = dec % (n * (int)pow(16,exp));
+		exp--;
+	}
+	return hex;
+}
+
+std::string Math::dtob(int dec)
+{
+	std::string bin = "";
+	int exp = 0;
+	for(;pow(2,exp) <= dec; exp++);
+	exp--;
+	while (exp >= 0)
+	{
+		if(dec == 0) 
+		{
+			bin.push_back('0');
+			exp--;
+			continue;
+		}
+		int n = dec / pow(2,exp);
+		if(n < 10)
+		{
+			std::stringstream s;
+			s << n;
+			bin.push_back(s.str()[0]);
+		}
+
+		if(n > 0) dec = dec % (n * (int)pow(2,exp));
+		exp--;
+	}
+	return bin;
+
+}
+
 char Math::lastChar(const std::string s, int currentIndex)
 {
 	for(int c = currentIndex - 1; c >= 0; c--)

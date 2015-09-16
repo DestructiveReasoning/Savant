@@ -45,6 +45,10 @@ public:
 	static std::string	infixToRPN(std::string infix);
 	static double		evaluateRPN(std::string rpn, double x, bool verbose);
 	static void 		appendCurrentNumber(bool negative);
+	static int 		htod(std::string hex);
+	static int 		btod(std::string bin);
+	static std::string	dtoh(int dec);
+	static std::string	dtob(int dec);
 
 	static double exponential(double base, double exponent, bool verbose);
 	
