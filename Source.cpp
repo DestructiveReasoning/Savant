@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	}
 	logoFile.close();
 
-	printf("\n%s\nv0.3.1\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.3.2\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n");
 	printf("For instructions, type \'help\'.\n\n");
 	initialize();
@@ -193,7 +193,13 @@ int main(int argc, char *argv[])
 			std::string valinfix;
 			double val = 0.0f;
 			stream << infix;
-			stream >> newvar >> newvar >> valinfix;
+			stream >> newvar >> newvar;
+			std::string tmp;
+			while(!stream.eof())
+			{
+				stream >> tmp;
+				valinfix += tmp;
+			}
 			val = Math::evaluateRPN(Math::infixToRPN(valinfix),0,false);
 			Math::variables[Math::ANS]->setValue(val);
 			bool canCreate = true;
