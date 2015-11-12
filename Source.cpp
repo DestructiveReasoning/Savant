@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	}
 	logoFile.close();
 
-	printf("\n%s\nv0.3.2\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.3.3\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n");
 	printf("For instructions, type \'help\'.\n\n");
 	initialize();
@@ -119,40 +119,13 @@ int main(int argc, char *argv[])
 		printf("savant> ");
 		std::getline(std::cin,infix);
 		if(infix == "quit" || infix == "exit") running = false;
+		else if(infix[0] == '#') continue;
 		else if(infix == "clear") system("clear");
 		else if(infix == "quadratic")
 		{
 			Math::variables = variables;
 			printf("~$ Starting Quadratic Mode $~\n");
 			solveQuadratic();
-		}
-		else if(substring(infix,0,4) == "htod ")
-		{
-			std::string hex = substring(infix,5,infix.size() - 1);
-			int dec = Math::htod(hex);
-			Math::variables[Math::ANS]->setValue((double)dec);
-			printf("%d\n",dec);
-		}
-		else if(substring(infix,0,4) == "btod ")
-		{
-			std::string bin = substring(infix,5,infix.size() - 1);
-			int dec = Math::btod(bin);
-			Math::variables[Math::ANS]->setValue((double)dec);
-			printf("%d\n",dec);
-		}
-		else if(substring(infix,0,4) == "dtoh ")
-		{
-			std::string x = substring(infix,5,infix.size() - 1);
-			int dec = atoi(x.c_str());
-			std::string hex = Math::dtoh(dec);
-			printf("%s\n", hex.c_str());
-		}
-		else if(substring(infix,0,4) == "dtob ")
-		{
-			std::string x = substring(infix,5,infix.size() - 1);
-			int dec = atoi(x.c_str());
-			std::string bin = Math::dtob(dec);
-			printf("%s\n", bin.c_str());
 		}
 		else if((vn = Txt::contains(infix,'=')) != -1)
 		{
@@ -193,13 +166,7 @@ int main(int argc, char *argv[])
 			std::string valinfix;
 			double val = 0.0f;
 			stream << infix;
-			stream >> newvar >> newvar;
-			std::string tmp;
-			while(!stream.eof())
-			{
-				stream >> tmp;
-				valinfix += tmp;
-			}
+			stream >> newvar >> newvar >> valinfix;
 			val = Math::evaluateRPN(Math::infixToRPN(valinfix),0,false);
 			Math::variables[Math::ANS]->setValue(val);
 			bool canCreate = true;
