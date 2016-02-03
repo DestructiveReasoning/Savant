@@ -1,5 +1,6 @@
 #include "destructive_reasoning.h"
 #include "variable.h"
+#include "symbol.h"
 #include "Math.h"
 #include "Txt.h"
 #include "./SDLCartesian.h"
@@ -60,7 +61,7 @@ void graphPolar(std::string infix);
 void graphPolars(std::vector<std::string> functions);
 void graphParametric2D(std::vector<std::string> equations);
 void showHelp();
-std::vector<Variable *> variables;
+std::vector<Symbol *> variables;
 std::vector<std::string> intros;
 
 int main(int argc, char *argv[])
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
 	}
 	logoFile.close();
 
-	printf("\n%s\nv0.3.4\nCopyright (C) 2015 Harley Wiltzer\nPowered by Har Wiltz's Destructive Reasoning\n", TITLE);
+	printf("\n%s\nv0.3.5\nCopyright (C) 2015 Harley Wiltzer\nPowered by Destructive Reasoning\n", TITLE);
 	printf("This free software includes exactly 0 warranties\n");
 	printf("For instructions, type \'help\'.\n\n");
 	initialize();
