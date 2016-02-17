@@ -1,0 +1,8 @@
+===VECTOR MATH===
+Figure out how to deal with the various possible return types of a vector equation
+	Return a Symbol?
+Figure out order of operations with vector procedures (dot product, cross product...)
+Implement evaluation function
+	Similar to evaluateRPN/infixToRPN
+Figure out when to handle a normalize() procedure
+Saving temporary vector variables

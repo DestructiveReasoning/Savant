@@ -17,6 +17,7 @@ class Symbol
 		inline bool isConstant() { return constant; };
 		virtual double getValue() { return 0; };
 		virtual void setValue(double v) { value = v; };
+		virtual std::string toString() {};
 
 		static Vector *addVectors(Symbol,Symbol);
 		static Vector *subVectors(Symbol,Symbol);

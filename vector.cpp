@@ -14,6 +14,11 @@ Vector::Vector(std::string n, double v[], int dim) :
 	dimension = dim;
 }
 
+Vector * Vector::evaluateVectorMath(std::string equation) {
+	if(!saneBrackets(equation)) return new Vector("_tmpBadVector",new double[0],0);
+	return new Vector("_tmpvec",new double[0],0);
+}
+
 void Vector::setVector(std::string v) {
 	std::string *nums;
 	int size = 0;
@@ -37,3 +42,26 @@ void Vector::setVector(std::string v) {
 	dimension = size;
 }
 
+std::string Vector::toString() {
+	std::stringstream vec = std::stringstream();
+	vec << "<";
+	for(int c = 0; c < dimension; c++) {
+		vec << vector[c];
+		if(c != dimension - 1) vec << ", ";
+	}
+	vec << ">";
+
+	return vec.str();
+}
+
+bool Vector::saneBrackets(std::string s) {
+	std::vector<char> brackets;
+	for(int c = 0; c < s.size(); c++) {
+		if(s[c] == '<') brackets.push_back('<');
+		if(s[c] == '>') {
+			if(brackets.size() == 0) return false;
+			brackets.pop_back();
+		}
+	}
+	return brackets.size() == 0;
+}

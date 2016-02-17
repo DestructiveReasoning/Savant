@@ -1,6 +1,6 @@
 #include "destructive_reasoning.h"
 #include "variable.h"
-#include "symbol.h"
+#include "vector.h"
 #include "Math.h"
 #include "Txt.h"
 #include "./SDLCartesian.h"
@@ -332,6 +332,15 @@ int main(int argc, char *argv[])
 		else
 		{
 			if(Txt::trimEnd(infix) == "") continue;
+			if(Txt::contains(infix,'<') != -1) {
+				if(Vector::saneBrackets(infix)) {
+					Symbol *vec = new Vector("_tmpvec",infix);
+					printf("Created %s\n",vec->toString().c_str());
+					delete vec;
+					continue;
+				}
+				else printf("What opens must close\n");
+			}
 			std::string r = Math::infixToRPN(infix);
 			Math::variables[Math::ANS]->setValue(Math::evaluateRPN(r,0,true));
 		}
@@ -497,6 +506,8 @@ void initialize()
 	Math::insults.push_back("Pssssshhhhhhh...");
 	Math::insults.push_back("I hope you have other \'talents\'");
 	Math::insults.push_back("You're a raaaabid anti-dentite!");
+	Math::insults.push_back("Maybe the dingo ate your baby");
+	Math::insults.push_back("K-Mart sucks!");
 
 	Math::colorNames[0] 	= "Yellow";
 	Math::colorNames[1]	= "Red";
