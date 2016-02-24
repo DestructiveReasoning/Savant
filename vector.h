@@ -3,7 +3,9 @@
 
 #include "destructive_reasoning.h"
 #include "symbol.h"
+#include "Txt.h"
 #include <sstream>
+#include <stack>
 
 class Vector : public Symbol
 {
@@ -18,7 +20,10 @@ class Vector : public Symbol
 		static Vector *evaluateVectorMath(std::string);
 		
 	private:
+		static std::vector<std::string> operators;
+		static std::vector<std::string> initOperators();
 		void setVector(std::string);
+		void pushNewToken(std::string token, std::stack<Symbol *>, std::stack<std::string>);
 
 };
 
